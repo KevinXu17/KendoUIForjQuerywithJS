@@ -28,6 +28,10 @@ dashboardPageModel.statusCounts$.subscribe(results => {
 
 $(() => {
 
+    $('#inputAssignee').kendoComboBox({
+        
+    });
+
     $('.pt-class-range-group').kendoButtonGroup();
 
     $('.pt-class-range-filter')
