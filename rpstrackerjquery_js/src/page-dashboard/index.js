@@ -9,6 +9,7 @@ import '@progress/kendo-ui/js/kendo.all';
 import { DashboardPageModel } from './dashboard-page-model';
 
 const dashboardPageModel = new DashboardPageModel();
+let usersComboBox = null;
 
 dashboardPageModel.filter$.subscribe(filter => {
     if (filter && filter.dateStart && filter.dateEnd) {
@@ -26,11 +27,30 @@ dashboardPageModel.statusCounts$.subscribe(results => {
     }
 });
 
+dashboardPageModel.users$.subscribe(users => {
+    if (users && usersComboBox) {
+        usersComboBox.dataSource.data(users);
+    }
+})
+
 $(() => {
 
-    $('#inputAssignee').kendoComboBox({
-        
-    });
+    usersComboBox = $('#inputAssignee').kendoComboBox({
+        dataTextField: "fullName",
+        dataValueField: "id",
+        template: `
+        <div class="row" style="margin-left: 5px;">
+        <img src=#=avatar#
+        class="li-avatar rounded mx-auto d-block" /><span style="margin-left: 5px;">#=fullName#</span>
+        </div>
+        `,
+        dataSource: [],
+        open: () => dashboardPageModel.usersRequested(),
+        change: (e) => {
+            dashboardPageModel.selectedUserIdStr = e.sender.value();
+            dashboardPageModel.userFilterValueChange();
+        }
+    }).data("kendoComboBox");
 
     $('.pt-class-range-group').kendoButtonGroup();
 
